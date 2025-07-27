@@ -138,11 +138,11 @@ const { title, description, publishedAt, updatedAt, heroImage, content, category
 				<div class="prose">
 					<div class="title">
 						<div class="date">
-							<FormattedDate date={new Date(publishedAt)} />
+							<FormattedDate date={publishedAt} />
 							{
 								updatedAt && updatedAt !== publishedAt && (
 									<div class="last-updated-on">
-										最終更新: <FormattedDate date={new Date(updatedAt)} />
+										最終更新: <FormattedDate date={updatedAt} />
 									</div>
 								)
 							}

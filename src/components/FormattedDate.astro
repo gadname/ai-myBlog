@@ -1,16 +1,32 @@
 ---
 interface Props {
-	date: Date;
+	date: Date | string;
 }
 
 const { date } = Astro.props;
+
+// 日付を安全にDateオブジェクトに変換
+const safeDate = (() => {
+	if (!date) return new Date();
+	
+	if (date instanceof Date) {
+		return isNaN(date.getTime()) ? new Date() : date;
+	}
+	
+	if (typeof date === 'string') {
+		const parsedDate = new Date(date);
+		return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+	}
+	
+	return new Date();
+})();
 ---
 
-<time datetime={date.toISOString()}>
+<time datetime={safeDate.toISOString()}>
 	{
-		date.toLocaleDateString('en-us', {
+		safeDate.toLocaleDateString('ja-JP', {
 			year: 'numeric',
-			month: 'short',
+			month: 'long',
 			day: 'numeric',
 		})
 	}

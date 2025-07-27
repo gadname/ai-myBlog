@@ -107,7 +107,7 @@ const posts = response.contents;
 									)}
 									<h4 class="title">{post.title}</h4>
 									<p class="date">
-										<FormattedDate date={new Date(post.publishedAt)} />
+										<FormattedDate date={post.publishedAt} />
 									</p>
 								</a>
 							</li>
