@@ -2,119 +2,469 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
+import { SITE_TITLE } from '../consts';
 ---
 
 <!doctype html>
 <html lang="ja">
 	<head>
-		<BaseHead title="About Me" description="Lorem ipsum dolor sit amet" />
+		<BaseHead title={`アバウト | ${SITE_TITLE}`} description="プロフェッショナル開発者・デザイナーとしての私について" />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+			/* About Hero Section */
+			.about-hero {
+				position: relative;
+				overflow: hidden;
+				padding: var(--space-4xl) 0;
+				background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(var(--gray-100), 0.5) 100%);
 			}
-			.hero-image {
-				width: 100%;
+			
+			.about-hero::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: 
+					radial-gradient(circle at 30% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+					radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
+					radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.04) 0%, transparent 60%);
+				animation: breathe 20s ease-in-out infinite;
 			}
-			.hero-image img {
-				display: block;
+			
+			@keyframes breathe {
+				0%, 100% { transform: scale(1) rotate(0deg); }
+				50% { transform: scale(1.1) rotate(5deg); }
+			}
+			
+			.about-container {
+				max-width: var(--max-width-6xl);
 				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				padding: 0 var(--space-xl);
+				position: relative;
+				z-index: 1;
 			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
+			
+			.about-header {
 				text-align: center;
-				line-height: 1;
+				margin-bottom: var(--space-4xl);
 			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
+			
+			.about-title {
+				font-size: clamp(3rem, 8vw, 4.5rem);
+				margin-bottom: var(--space-xl);
+				background: var(--primary-gradient);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				background-size: 200% 200%;
+				animation: gradient 5s ease infinite;
+				font-weight: 900;
+				letter-spacing: -0.03em;
+			}
+			
+			.about-subtitle {
+				font-size: var(--font-size-xl);
+				color: var(--text-secondary);
+				opacity: 0.8;
+				max-width: var(--max-width-2xl);
+				margin: 0 auto;
+			}
+			
+			/* Profile Section */
+			.profile-section {
+				display: grid;
+				grid-template-columns: 1fr 2fr;
+				gap: var(--space-3xl);
+				align-items: start;
+				margin-bottom: var(--space-4xl);
+			}
+			
+			.profile-image-wrapper {
+				position: relative;
+			}
+			
+			.profile-image {
+				width: 100%;
+				max-width: 300px;
+				aspect-ratio: 1;
+				border-radius: var(--radius-2xl);
+				overflow: hidden;
+				margin: 0 auto;
+				background: var(--primary-gradient);
+				padding: 3px;
+				box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+				transition: all var(--transition-slow);
+			}
+			
+			.profile-image:hover {
+				transform: translateY(-10px) scale(1.05);
+				box-shadow: 0 30px 60px rgba(99, 102, 241, 0.4);
+			}
+			
+			.profile-image img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				border-radius: var(--radius-xl);
+			}
+			
+			.profile-content {
+				display: flex;
+				flex-direction: column;
+				gap: var(--space-xl);
+			}
+			
+			.profile-intro {
+				font-size: var(--font-size-lg);
+				line-height: var(--line-height-relaxed);
+				color: var(--text-secondary);
+			}
+			
+			.profile-stats {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: var(--space-xl);
+				margin-top: var(--space-xl);
+			}
+			
+			.stat-card {
+				text-align: center;
+				padding: var(--space-xl);
+				background: rgba(255, 255, 255, 0.8);
+				backdrop-filter: blur(10px);
+				border-radius: var(--radius-xl);
+				border: 1px solid rgba(var(--gray-200), 0.3);
+				transition: all var(--transition-base);
+			}
+			
+			.stat-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+				border-color: rgba(99, 102, 241, 0.2);
+			}
+			
+			.stat-number {
+				font-size: var(--font-size-3xl);
+				font-weight: 800;
+				background: var(--primary-gradient);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				margin-bottom: var(--space-sm);
+			}
+			
+			.stat-label {
+				font-size: var(--font-size-sm);
+				color: var(--text-muted);
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+			}
+			
+			/* Skills Section */
+			.skills-section {
+				margin-bottom: var(--space-4xl);
+			}
+			
+			.section-title {
+				font-size: var(--font-size-3xl);
+				margin-bottom: var(--space-2xl);
+				text-align: center;
+				position: relative;
+			}
+			
+			.section-title::after {
+				content: '';
+				position: absolute;
+				bottom: -10px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 80px;
+				height: 4px;
+				background: var(--primary-gradient);
+				border-radius: var(--radius-full);
+			}
+			
+			.skills-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: var(--space-xl);
+			}
+			
+			.skill-card {
+				padding: var(--space-2xl);
+				background: rgba(255, 255, 255, 0.8);
+				backdrop-filter: blur(10px);
+				border-radius: var(--radius-xl);
+				border: 1px solid rgba(var(--gray-200), 0.3);
+				transition: all var(--transition-base);
+				text-align: center;
+			}
+			
+			.skill-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+				border-color: rgba(99, 102, 241, 0.2);
+			}
+			
+			.skill-icon {
+				width: 60px;
+				height: 60px;
+				margin: 0 auto var(--space-lg);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: var(--primary-gradient);
+				color: rgb(var(--white));
+				border-radius: var(--radius-lg);
+				font-size: var(--font-size-2xl);
+			}
+			
+			.skill-name {
+				font-size: var(--font-size-lg);
+				font-weight: 700;
+				margin-bottom: var(--space-sm);
+			}
+			
+			.skill-description {
+				font-size: var(--font-size-sm);
+				color: var(--text-secondary);
+				line-height: var(--line-height-relaxed);
+			}
+			
+			/* Experience Section */
+			.experience-section {
+				margin-bottom: var(--space-4xl);
+			}
+			
+			.timeline {
+				position: relative;
+				padding-left: var(--space-3xl);
+			}
+			
+			.timeline::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				width: 2px;
+				background: linear-gradient(180deg, var(--primary) 0%, var(--accent-purple) 100%);
+			}
+			
+			.timeline-item {
+				position: relative;
+				margin-bottom: var(--space-3xl);
+			}
+			
+			.timeline-item::before {
+				content: '';
+				position: absolute;
+				left: calc(-1 * var(--space-3xl) - 6px);
+				top: 0;
+				width: 14px;
+				height: 14px;
+				background: var(--primary);
+				border-radius: var(--radius-full);
+				box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+			}
+			
+			.timeline-date {
+				font-size: var(--font-size-sm);
+				color: var(--primary);
+				font-weight: 600;
+				margin-bottom: var(--space-sm);
+			}
+			
+			.timeline-title {
+				font-size: var(--font-size-xl);
+				font-weight: 700;
+				margin-bottom: var(--space-sm);
+			}
+			
+			.timeline-company {
+				font-size: var(--font-size-base);
+				color: var(--text-secondary);
+				margin-bottom: var(--space-md);
+			}
+			
+			.timeline-description {
+				font-size: var(--font-size-base);
+				color: var(--text-secondary);
+				line-height: var(--line-height-relaxed);
+			}
+			
+			/* Contact CTA */
+			.contact-cta {
+				text-align: center;
+				padding: var(--space-3xl);
+				background: rgba(255, 255, 255, 0.8);
+				backdrop-filter: blur(20px);
+				border-radius: var(--radius-2xl);
+				border: 1px solid rgba(var(--gray-200), 0.3);
+				margin-bottom: var(--space-4xl);
+			}
+			
+			.contact-cta h3 {
+				font-size: var(--font-size-2xl);
+				margin-bottom: var(--space-lg);
+			}
+			
+			.contact-cta p {
+				font-size: var(--font-size-lg);
+				color: var(--text-secondary);
+				margin-bottom: var(--space-2xl);
+			}
+			
+			/* Responsive */
+			@media (max-width: 768px) {
+				.profile-section {
+					grid-template-columns: 1fr;
+					text-align: center;
+				}
+				
+				.profile-stats {
+					grid-template-columns: 1fr;
+					gap: var(--space-lg);
+				}
+				
+				.timeline {
+					padding-left: var(--space-xl);
+				}
+				
+				.timeline-item::before {
+					left: calc(-1 * var(--space-xl) - 6px);
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					<img
-						width={1020}
-						height={510}
-						src={AboutHeroImage.src}
-						alt="About Me"
-					/>
+		
+		<section class="about-hero">
+			<div class="about-container">
+				<div class="about-header">
+					<h1 class="about-title">私について</h1>
+					<p class="about-subtitle">
+						情熱的な開発者として、美しくて機能的なデジタル体験を創造しています
+					</p>
 				</div>
-				<div class="prose">
-					<div class="title">
-						<h1>About Me</h1>
-						<hr />
+				
+				<div class="profile-section">
+					<div class="profile-image-wrapper">
+						<div class="profile-image">
+							<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="プロフィール画像" />
+						</div>
 					</div>
-					<div class="content">
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
-
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
-
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
-
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
-
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
+					
+					<div class="profile-content">
+						<div class="profile-intro">
+							<p>
+								こんにちは！私はフルスタック開発者として、最新のWeb技術を使用して革新的なソリューションを構築しています。
+								ユーザー体験を第一に考え、パフォーマンスとアクセシビリティを重視した開発を心がけています。
+							</p>
+							<p>
+								10年以上の経験を持ち、スタートアップから大企業まで様々なプロジェクトに携わってきました。
+								技術的な課題解決だけでなく、ビジネス価値の創出にも注力しています。
+							</p>
+						</div>
+						
+						<div class="profile-stats">
+							<div class="stat-card">
+								<div class="stat-number">10+</div>
+								<div class="stat-label">年の経験</div>
+							</div>
+							<div class="stat-card">
+								<div class="stat-number">50+</div>
+								<div class="stat-label">完了プロジェクト</div>
+							</div>
+							<div class="stat-card">
+								<div class="stat-number">30+</div>
+								<div class="stat-label">満足したクライアント</div>
+							</div>
+						</div>
 					</div>
 				</div>
-			</article>
+			</div>
+		</section>
+		
+		<main class="about-container">
+			<section class="skills-section">
+				<h2 class="section-title">スキルセット</h2>
+				<div class="skills-grid">
+					<div class="skill-card">
+						<div class="skill-icon">⚛️</div>
+						<h3 class="skill-name">フロントエンド開発</h3>
+						<p class="skill-description">
+							React、Vue.js、TypeScriptを使用したモダンなWebアプリケーション開発
+						</p>
+					</div>
+					<div class="skill-card">
+						<div class="skill-icon">🔧</div>
+						<h3 class="skill-name">バックエンド開発</h3>
+						<p class="skill-description">
+							Node.js、Python、データベース設計、API開発の豊富な経験
+						</p>
+					</div>
+					<div class="skill-card">
+						<div class="skill-icon">🎨</div>
+						<h3 class="skill-name">UI/UXデザイン</h3>
+						<p class="skill-description">
+							ユーザー中心のデザイン思考で、美しく使いやすいインターフェースを設計
+						</p>
+					</div>
+					<div class="skill-card">
+						<div class="skill-icon">☁️</div>
+						<h3 class="skill-name">クラウドアーキテクチャ</h3>
+						<p class="skill-description">
+							AWS、Google Cloud、Dockerを使用したスケーラブルなインフラ構築
+						</p>
+					</div>
+				</div>
+			</section>
+			
+			<section class="experience-section">
+				<h2 class="section-title">経歴</h2>
+				<div class="timeline">
+					<div class="timeline-item">
+						<div class="timeline-date">2020年 - 現在</div>
+						<h3 class="timeline-title">シニアフルスタック開発者</h3>
+						<div class="timeline-company">テックイノベーション株式会社</div>
+						<p class="timeline-description">
+							大規模なWebアプリケーションの設計・開発をリード。チーム管理と技術的な意思決定を担当。
+						</p>
+					</div>
+					<div class="timeline-item">
+						<div class="timeline-date">2018年 - 2020年</div>
+						<h3 class="timeline-title">フロントエンド開発者</h3>
+						<div class="timeline-company">デジタルソリューションズ</div>
+						<p class="timeline-description">
+							ReactとTypeScriptを使用したSPAの開発。UIコンポーネントライブラリの構築。
+						</p>
+					</div>
+					<div class="timeline-item">
+						<div class="timeline-date">2015年 - 2018年</div>
+						<h3 class="timeline-title">ジュニア開発者</h3>
+						<div class="timeline-company">スタートアップXYZ</div>
+						<p class="timeline-description">
+							Webアプリケーションの開発とメンテナンス。アジャイル開発手法の実践。
+						</p>
+					</div>
+				</div>
+			</section>
+			
+			<div class="contact-cta">
+				<h3>一緒に素晴らしいものを作りましょう</h3>
+				<p>新しいプロジェクトやコラボレーションのご相談はお気軽に</p>
+				<a href="#contact" class="btn btn-primary">
+					<span>お問い合わせ</span>
+					<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+						<path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+					</svg>
+				</a>
+			</div>
 		</main>
+		
 		<Footer />
 	</body>
 </html>

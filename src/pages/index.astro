@@ -3,47 +3,617 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getBlogs } from '../lib/microcms';
+import FormattedDate from '../components/FormattedDate.astro';
+
+// 最新のブログ記事を取得
+const response = await getBlogs({
+	limit: 3,
+	orders: '-publishedAt'
+});
+const recentPosts = response.contents;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			/* Hero Section - Premium Design */
+			.hero {
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				position: relative;
+				overflow: hidden;
+				background: var(--bg-primary);
+			}
+			
+			.hero::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: 
+					radial-gradient(circle at 30% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+					radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
+					radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.04) 0%, transparent 60%);
+				animation: breathe 20s ease-in-out infinite;
+			}
+			
+			@keyframes breathe {
+				0%, 100% { transform: scale(1) rotate(0deg); }
+				50% { transform: scale(1.1) rotate(5deg); }
+			}
+
+			.hero-content {
+				position: relative;
+				z-index: 1;
+				max-width: var(--max-width-4xl);
+				padding: 0 var(--space-xl);
+			}
+			
+			.hero-label {
+				display: inline-block;
+				padding: var(--space-xs) var(--space-xl);
+				background: rgba(99, 102, 241, 0.1);
+				border: 1px solid rgba(99, 102, 241, 0.2);
+				border-radius: var(--radius-full);
+				color: var(--primary);
+				font-size: var(--font-size-sm);
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				margin-bottom: var(--space-xl);
+			}
+
+			.hero-title {
+				font-size: clamp(3.5rem, 12vw, 6rem);
+				margin-bottom: var(--space-xl);
+				background: var(--primary-gradient);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				animation: fadeInUp 1s ease-out, gradient 5s ease infinite;
+				background-size: 200% 200%;
+				letter-spacing: -0.04em;
+				line-height: 0.9;
+				font-weight: 900;
+			}
+
+			.hero-subtitle {
+				font-size: clamp(var(--font-size-lg), 3.5vw, var(--font-size-2xl));
+				color: var(--text-secondary);
+				margin-bottom: var(--space-3xl);
+				animation: fadeInUp 1s ease-out 0.2s both;
+				font-weight: 400;
+				opacity: 0.8;
+				line-height: 1.4;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.hero-actions {
+				display: flex;
+				gap: var(--space-lg);
+				justify-content: center;
+				flex-wrap: wrap;
+				animation: fadeInUp 1s ease-out 0.4s both;
+			}
+			
+			.btn-icon {
+				margin-left: var(--space-sm);
+				transition: transform var(--transition-base);
+			}
+			
+			.btn:hover .btn-icon {
+				transform: translateX(4px);
+			}
+			
+			.btn-glass {
+				background: rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(10px);
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				color: var(--text-primary);
+			}
+			
+			.btn-glass:hover {
+				background: rgba(255, 255, 255, 0.15);
+				border-color: rgba(99, 102, 241, 0.3);
+			}
+
+			/* Features Section - Glass Morphism */
+			.features {
+				padding: var(--space-4xl) var(--space-xl);
+				background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(var(--gray-100), 0.5) 100%);
+				position: relative;
+			}
+
+			.features-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: var(--space-2xl);
+				max-width: var(--max-width-6xl);
+				margin: 0 auto;
+			}
+
+			.feature-card {
+				text-align: center;
+				padding: var(--space-3xl) var(--space-2xl);
+				border-radius: var(--radius-2xl);
+				background: rgba(255, 255, 255, 0.7);
+				backdrop-filter: blur(20px);
+				transition: all var(--transition-slow);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				position: relative;
+				overflow: hidden;
+			}
+			
+			.feature-card::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: var(--primary-gradient);
+				opacity: 0;
+				transition: opacity var(--transition-base);
+			}
+
+			.feature-card:hover {
+				transform: translateY(-12px) scale(1.02);
+				box-shadow: 
+					0 20px 40px rgba(99, 102, 241, 0.15),
+					0 0 0 1px rgba(99, 102, 241, 0.1);
+			}
+			
+			.feature-card:hover::before {
+				opacity: 0.02;
+			}
+
+			.feature-icon {
+				width: 80px;
+				height: 80px;
+				margin: 0 auto var(--space-xl);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: var(--primary-gradient);
+				color: rgb(var(--white));
+				border-radius: var(--radius-xl);
+				box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+				transition: all var(--transition-base);
+				position: relative;
+				z-index: 1;
+			}
+			
+			.feature-card:hover .feature-icon {
+				transform: translateY(-4px) rotate(5deg) scale(1.1);
+				box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+			}
+
+			.feature-title {
+				font-size: var(--font-size-xl);
+				margin-bottom: var(--space-md);
+				font-weight: 700;
+			}
+
+			.feature-description {
+				color: var(--text-secondary);
+				line-height: var(--line-height-relaxed);
+				font-size: var(--font-size-base);
+			}
+
+			/* Recent Posts Section - Magazine Style */
+			.recent-posts {
+				padding: var(--space-4xl) var(--space-xl);
+				background: var(--bg-primary);
+				position: relative;
+			}
+
+			.section-header {
+				text-align: center;
+				margin-bottom: var(--space-3xl);
+			}
+
+			.section-title {
+				font-size: clamp(2.5rem, 6vw, 3.5rem);
+				margin-bottom: var(--space-md);
+				position: relative;
+				display: inline-block;
+			}
+			
+			.section-title::after {
+				content: '';
+				position: absolute;
+				bottom: -10px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 80px;
+				height: 4px;
+				background: var(--primary-gradient);
+				border-radius: var(--radius-full);
+			}
+
+			.section-subtitle {
+				font-size: var(--font-size-lg);
+				color: var(--text-secondary);
+				opacity: 0.8;
+			}
+
+			.posts-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+				gap: var(--space-2xl);
+				max-width: var(--max-width-6xl);
+				margin: 0 auto;
+			}
+
+			.post-card {
+				background: rgba(255, 255, 255, 0.8);
+				backdrop-filter: blur(10px);
+				border-radius: var(--radius-xl);
+				overflow: hidden;
+				transition: all var(--transition-slow);
+				text-decoration: none;
+				display: flex;
+				flex-direction: column;
+				border: 1px solid rgba(var(--gray-200), 0.3);
+				position: relative;
+				group: true;
+			}
+			
+			.post-card::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 200%;
+				background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 100%);
+				opacity: 0;
+				transition: opacity var(--transition-slow);
+				pointer-events: none;
+			}
+
+			.post-card:hover {
+				transform: translateY(-10px);
+				box-shadow: 
+					0 30px 60px rgba(0, 0, 0, 0.1),
+					0 0 0 1px rgba(99, 102, 241, 0.1);
+			}
+			
+			.post-card:hover::before {
+				opacity: 1;
+			}
+
+			.post-card:hover .post-image img {
+				transform: scale(1.1);
+				filter: brightness(1.1) saturate(1.2);
+			}
+
+			.post-image {
+				aspect-ratio: 16 / 10;
+				overflow: hidden;
+				position: relative;
+				z-index: 2;
+			}
+
+			.post-image img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				transition: all var(--transition-slow);
+			}
+
+			.post-content {
+				padding: var(--space-xl);
+				flex-grow: 1;
+				display: flex;
+				flex-direction: column;
+				position: relative;
+				z-index: 2;
+			}
+
+			.post-title {
+				font-size: var(--font-size-xl);
+				margin-bottom: var(--space-sm);
+				color: var(--text-primary);
+				line-height: var(--line-height-snug);
+				font-weight: 700;
+				transition: color var(--transition-base);
+			}
+			
+			.post-card:hover .post-title {
+				color: var(--primary);
+			}
+
+			.post-date {
+				color: var(--text-muted);
+				font-size: var(--font-size-sm);
+				font-weight: 500;
+			}
+
+			.view-all {
+				text-align: center;
+				margin-top: var(--space-3xl);
+			}
+			
+			.btn-outline {
+				background: transparent;
+				color: var(--primary);
+				border: 2px solid var(--primary);
+				box-shadow: none;
+			}
+			
+			.btn-outline:hover {
+				background: var(--primary);
+				color: rgb(var(--white));
+				box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+			}
+
+			/* CTA Section - Gradient Mesh */
+			.cta {
+				padding: var(--space-4xl) var(--space-xl);
+				background: var(--primary-gradient);
+				color: rgb(var(--white));
+				text-align: center;
+				position: relative;
+				overflow: hidden;
+			}
+			
+			.cta::before,
+			.cta::after {
+				content: '';
+				position: absolute;
+				border-radius: 50%;
+				filter: blur(80px);
+				opacity: 0.3;
+			}
+			
+			.cta::before {
+				top: -50%;
+				left: -25%;
+				width: 50%;
+				height: 100%;
+				background: var(--accent-purple);
+				animation: float 25s ease-in-out infinite;
+			}
+			
+			.cta::after {
+				bottom: -50%;
+				right: -25%;
+				width: 50%;
+				height: 100%;
+				background: var(--accent-coral);
+				animation: float 30s ease-in-out infinite reverse;
+			}
+
+			.cta-title {
+				font-size: clamp(2rem, 5vw, 3rem);
+				margin-bottom: var(--space-lg);
+				position: relative;
+				z-index: 1;
+				font-weight: 800;
+			}
+
+			.cta-description {
+				font-size: var(--font-size-xl);
+				margin-bottom: var(--space-2xl);
+				opacity: 0.9;
+				position: relative;
+				z-index: 1;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			
+			.cta-actions {
+				position: relative;
+				z-index: 1;
+			}
+
+			.btn-white {
+				background-color: rgba(255, 255, 255, 0.95);
+				color: var(--primary);
+				backdrop-filter: blur(10px);
+				border: 2px solid rgba(255, 255, 255, 0.3);
+				font-weight: 600;
+			}
+
+			.btn-white:hover {
+				background-color: rgb(var(--white));
+				transform: translateY(-3px) scale(1.05);
+				box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+			}
+			
+			.btn-white .btn-icon {
+				margin-right: var(--space-sm);
+				margin-left: 0;
+			}
+
+			/* Responsive */
+			@media (max-width: 768px) {
+				.hero {
+					min-height: 100vh;
+					padding: var(--space-xl) 0;
+				}
+				
+				.hero-title {
+					font-size: clamp(2.5rem, 10vw, 4rem);
+				}
+
+				.hero-actions {
+					flex-direction: column;
+					align-items: center;
+					gap: var(--space-md);
+				}
+
+				.btn {
+					width: 100%;
+					max-width: 300px;
+				}
+				
+				.features-grid,
+				.posts-grid {
+					grid-template-columns: 1fr;
+					gap: var(--space-xl);
+				}
+			}
+
+			/* Animations */
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(30px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			
+			@keyframes float {
+				0%, 100% {
+					transform: translate(0, 0) rotate(0deg);
+				}
+				33% {
+					transform: translate(30px, -30px) rotate(120deg);
+				}
+				66% {
+					transform: translate(-20px, 20px) rotate(240deg);
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
+		
+		<!-- Hero Section -->
+		<section class="hero">
+			<div class="hero-content">
+				<span class="hero-label animate-fadeIn">プロフェッショナル開発者 & デザイナー</span>
+				<h1 class="hero-title">デジタル体験を創造する</h1>
+				<p class="hero-subtitle">エレガントなコードと思慮深いデザインで革新的なソリューションを構築</p>
+				<div class="hero-actions">
+					<a href="/blog" class="btn btn-primary">
+						<span>記事を見る</span>
+						<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+							<path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+						</svg>
+					</a>
+					<a href="#contact" class="btn btn-secondary btn-glass">
+						<span>お問い合わせ</span>
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features Section -->
+		<section class="features">
+			<div class="features-grid">
+				<div class="feature-card">
+					<div class="feature-icon">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+							<path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</div>
+					<h3 class="feature-title">モダンな技術スタック</h3>
+					<p class="feature-description">
+						最先端の技術を活用して、スケーラブルで高性能なアプリケーションを構築します。
+					</p>
+				</div>
+				<div class="feature-card">
+					<div class="feature-icon">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</div>
+					<h3 class="feature-title">優れたデザイン</h3>
+					<p class="feature-description">
+						ユーザーが愛する直感的で美しいインターフェースを作成します。
+					</p>
+				</div>
+				<div class="feature-card">
+					<div class="feature-icon">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+							<path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</div>
+					<h3 class="feature-title">パフォーマンス重視</h3>
+					<p class="feature-description">
+						速度と効率性を最適化し、卓越したユーザー体験を提供します。
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Recent Posts Section -->
+		<section class="recent-posts">
+			<div class="section-header">
+				<h2 class="section-title">最新の記事</h2>
+				<p class="section-subtitle">テクノロジーとデザインに関する最近の考察をご覧ください</p>
+			</div>
+			
+			<div class="posts-grid">
+				{recentPosts.map((post) => (
+					<a href={`/blog/${post.slug}/`} class="post-card">
+						{post.heroImage && (
+							<div class="post-image">
+								<img
+									src={post.heroImage.url + '?w=640&h=400&fit=crop'}
+									alt={post.title}
+									width="640"
+									height="400"
+									loading="lazy"
+								/>
+							</div>
+						)}
+						<div class="post-content">
+							<h3 class="post-title">{post.title}</h3>
+							<p class="post-date">
+								<FormattedDate date={new Date(post.publishedAt)} />
+							</p>
+						</div>
+					</a>
+				))}
+			</div>
+			
+			<div class="view-all">
+				<a href="/blog" class="btn btn-primary btn-outline">
+					<span>すべての記事を見る</span>
+					<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+						<path fill-rule="evenodd" d="M12.293 3.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 9H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+					</svg>
+				</a>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="cta" id="contact">
+			<h2 class="cta-title">一緒に素晴らしいものを作りましょう</h2>
+			<p class="cta-description">
+				革新的なプロジェクトでのコラボレーションと知識の共有をいつも楽しみにしています
 			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
+			<div class="cta-actions">
+				<a href="mailto:contact@example.com" class="btn btn-white">
+					<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+						<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+						<path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+					</svg>
+					<span>お問い合わせはこちら</span>
+				</a>
+			</div>
+		</section>
+
 		<Footer />
 	</body>
 </html>
