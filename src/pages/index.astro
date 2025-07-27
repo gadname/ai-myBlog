@@ -8,7 +8,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 
 // 最新のブログ記事を取得
 const response = await getBlogs({
-	limit: 3,
+	limit: 12,
 	orders: '-publishedAt'
 });
 const recentPosts = response.contents;
@@ -19,475 +19,312 @@ const recentPosts = response.contents;
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
-			/* Hero Section - Premium Design */
-			.hero {
+			/* Main Layout */
+			.main-wrapper {
+				background: #f8f9fa;
 				min-height: 100vh;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				text-align: center;
-				position: relative;
-				overflow: hidden;
-				background: var(--bg-primary);
 			}
 			
-			.hero::before {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background: 
-					radial-gradient(circle at 30% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
-					radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
-					radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.04) 0%, transparent 60%);
-				animation: breathe 20s ease-in-out infinite;
-			}
-			
-			@keyframes breathe {
-				0%, 100% { transform: scale(1) rotate(0deg); }
-				50% { transform: scale(1.1) rotate(5deg); }
-			}
-
-			.hero-content {
-				position: relative;
-				z-index: 1;
-				max-width: var(--max-width-4xl);
-				padding: 0 var(--space-xl);
-			}
-			
-			.hero-label {
-				display: inline-block;
-				padding: var(--space-xs) var(--space-xl);
-				background: rgba(99, 102, 241, 0.1);
-				border: 1px solid rgba(99, 102, 241, 0.2);
-				border-radius: var(--radius-full);
-				color: var(--primary);
-				font-size: var(--font-size-sm);
-				font-weight: 600;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin-bottom: var(--space-xl);
-			}
-
-			.hero-title {
-				font-size: clamp(3.5rem, 12vw, 6rem);
-				margin-bottom: var(--space-xl);
-				background: var(--primary-gradient);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-				animation: fadeInUp 1s ease-out, gradient 5s ease infinite;
-				background-size: 200% 200%;
-				letter-spacing: -0.04em;
-				line-height: 0.9;
-				font-weight: 900;
-			}
-
-			.hero-subtitle {
-				font-size: clamp(var(--font-size-lg), 3.5vw, var(--font-size-2xl));
-				color: var(--text-secondary);
-				margin-bottom: var(--space-3xl);
-				animation: fadeInUp 1s ease-out 0.2s both;
-				font-weight: 400;
-				opacity: 0.8;
-				line-height: 1.4;
-				max-width: 600px;
-				margin-left: auto;
-				margin-right: auto;
-			}
-
-			.hero-actions {
-				display: flex;
-				gap: var(--space-lg);
-				justify-content: center;
-				flex-wrap: wrap;
-				animation: fadeInUp 1s ease-out 0.4s both;
-			}
-			
-			.btn-icon {
-				margin-left: var(--space-sm);
-				transition: transform var(--transition-base);
-			}
-			
-			.btn:hover .btn-icon {
-				transform: translateX(4px);
-			}
-			
-			.btn-glass {
-				background: rgba(255, 255, 255, 0.1);
-				backdrop-filter: blur(10px);
-				border: 1px solid rgba(255, 255, 255, 0.2);
-				color: var(--text-primary);
-			}
-			
-			.btn-glass:hover {
-				background: rgba(255, 255, 255, 0.15);
-				border-color: rgba(99, 102, 241, 0.3);
-			}
-
-			/* Features Section - Glass Morphism */
-			.features {
-				padding: var(--space-4xl) var(--space-xl);
-				background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(var(--gray-100), 0.5) 100%);
-				position: relative;
-			}
-
-			.features-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-				gap: var(--space-2xl);
-				max-width: var(--max-width-6xl);
+			.main-container {
+				max-width: 1200px;
 				margin: 0 auto;
-			}
-
-			.feature-card {
-				text-align: center;
-				padding: var(--space-3xl) var(--space-2xl);
-				border-radius: var(--radius-2xl);
-				background: rgba(255, 255, 255, 0.7);
-				backdrop-filter: blur(20px);
-				transition: all var(--transition-slow);
-				border: 1px solid rgba(255, 255, 255, 0.3);
-				position: relative;
-				overflow: hidden;
+				padding: var(--space-2xl) var(--space-xl);
+				display: grid;
+				grid-template-columns: 1fr 320px;
+				gap: var(--space-3xl);
+				align-items: start;
 			}
 			
-			.feature-card::before {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background: var(--primary-gradient);
-				opacity: 0;
-				transition: opacity var(--transition-base);
-			}
-
-			.feature-card:hover {
-				transform: translateY(-12px) scale(1.02);
-				box-shadow: 
-					0 20px 40px rgba(99, 102, 241, 0.15),
-					0 0 0 1px rgba(99, 102, 241, 0.1);
+			/* Content Area */
+			.content-area {
+				min-width: 0;
 			}
 			
-			.feature-card:hover::before {
-				opacity: 0.02;
-			}
-
-			.feature-icon {
-				width: 80px;
-				height: 80px;
-				margin: 0 auto var(--space-xl);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: var(--primary-gradient);
-				color: rgb(var(--white));
-				border-radius: var(--radius-xl);
-				box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-				transition: all var(--transition-base);
-				position: relative;
-				z-index: 1;
-			}
-			
-			.feature-card:hover .feature-icon {
-				transform: translateY(-4px) rotate(5deg) scale(1.1);
-				box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-			}
-
-			.feature-title {
-				font-size: var(--font-size-xl);
-				margin-bottom: var(--space-md);
-				font-weight: 700;
-			}
-
-			.feature-description {
-				color: var(--text-secondary);
-				line-height: var(--line-height-relaxed);
-				font-size: var(--font-size-base);
-			}
-
-			/* Recent Posts Section - Magazine Style */
-			.recent-posts {
-				padding: var(--space-4xl) var(--space-xl);
-				background: var(--bg-primary);
-				position: relative;
-			}
-
-			.section-header {
-				text-align: center;
-				margin-bottom: var(--space-3xl);
-			}
-
-			.section-title {
-				font-size: clamp(2.5rem, 6vw, 3.5rem);
-				margin-bottom: var(--space-md);
-				position: relative;
-				display: inline-block;
-			}
-			
-			.section-title::after {
-				content: '';
-				position: absolute;
-				bottom: -10px;
-				left: 50%;
-				transform: translateX(-50%);
-				width: 80px;
-				height: 4px;
-				background: var(--primary-gradient);
-				border-radius: var(--radius-full);
-			}
-
-			.section-subtitle {
-				font-size: var(--font-size-lg);
-				color: var(--text-secondary);
-				opacity: 0.8;
-			}
-
+			/* Posts Grid */
 			.posts-grid {
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-				gap: var(--space-2xl);
-				max-width: var(--max-width-6xl);
-				margin: 0 auto;
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				gap: var(--space-xl);
 			}
-
+			
 			.post-card {
-				background: rgba(255, 255, 255, 0.8);
-				backdrop-filter: blur(10px);
-				border-radius: var(--radius-xl);
+				background: rgb(var(--white));
+				border-radius: var(--radius-lg);
 				overflow: hidden;
-				transition: all var(--transition-slow);
+				transition: all var(--transition-base);
 				text-decoration: none;
 				display: flex;
 				flex-direction: column;
-				border: 1px solid rgba(var(--gray-200), 0.3);
-				position: relative;
-				group: true;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+				border: 1px solid rgba(0, 0, 0, 0.06);
 			}
 			
-			.post-card::before {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				height: 200%;
-				background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.05) 100%);
-				opacity: 0;
-				transition: opacity var(--transition-slow);
-				pointer-events: none;
-			}
-
 			.post-card:hover {
-				transform: translateY(-10px);
-				box-shadow: 
-					0 30px 60px rgba(0, 0, 0, 0.1),
-					0 0 0 1px rgba(99, 102, 241, 0.1);
+				transform: translateY(-4px);
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 			}
 			
-			.post-card:hover::before {
-				opacity: 1;
-			}
-
-			.post-card:hover .post-image img {
-				transform: scale(1.1);
-				filter: brightness(1.1) saturate(1.2);
-			}
-
-			.post-image {
-				aspect-ratio: 16 / 10;
+			.post-thumbnail {
+				aspect-ratio: 16 / 9;
 				overflow: hidden;
+				background: #e9ecef;
 				position: relative;
-				z-index: 2;
 			}
-
-			.post-image img {
+			
+			.post-thumbnail img {
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
-				transition: all var(--transition-slow);
+				transition: transform var(--transition-slow);
 			}
-
+			
+			.post-card:hover .post-thumbnail img {
+				transform: scale(1.05);
+			}
+			
+			.post-category-tag {
+				position: absolute;
+				top: var(--space-md);
+				left: var(--space-md);
+				padding: var(--space-xs) var(--space-md);
+				background: #79b8b1;
+				color: white;
+				font-size: var(--font-size-xs);
+				font-weight: 600;
+				border-radius: var(--radius-sm);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+			}
+			
 			.post-content {
-				padding: var(--space-xl);
-				flex-grow: 1;
+				padding: var(--space-lg);
+				flex: 1;
 				display: flex;
 				flex-direction: column;
-				position: relative;
-				z-index: 2;
 			}
-
+			
 			.post-title {
-				font-size: var(--font-size-xl);
-				margin-bottom: var(--space-sm);
-				color: var(--text-primary);
-				line-height: var(--line-height-snug);
+				font-size: var(--font-size-base);
 				font-weight: 700;
-				transition: color var(--transition-base);
-			}
-			
-			.post-card:hover .post-title {
-				color: var(--primary);
-			}
-
-			.post-date {
-				color: var(--text-muted);
-				font-size: var(--font-size-sm);
-				font-weight: 500;
-			}
-
-			.view-all {
-				text-align: center;
-				margin-top: var(--space-3xl);
-			}
-			
-			.btn-outline {
-				background: transparent;
-				color: var(--primary);
-				border: 2px solid var(--primary);
-				box-shadow: none;
-			}
-			
-			.btn-outline:hover {
-				background: var(--primary);
-				color: rgb(var(--white));
-				box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-			}
-
-			/* CTA Section - Gradient Mesh */
-			.cta {
-				padding: var(--space-4xl) var(--space-xl);
-				background: var(--primary-gradient);
-				color: rgb(var(--white));
-				text-align: center;
-				position: relative;
+				color: var(--text-primary);
+				margin-bottom: var(--space-sm);
+				line-height: var(--line-height-snug);
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
 				overflow: hidden;
 			}
 			
-			.cta::before,
-			.cta::after {
-				content: '';
-				position: absolute;
-				border-radius: 50%;
-				filter: blur(80px);
-				opacity: 0.3;
+			.post-meta {
+				margin-top: auto;
+				display: flex;
+				align-items: center;
+				gap: var(--space-sm);
+				color: var(--text-muted);
+				font-size: var(--font-size-xs);
 			}
 			
-			.cta::before {
-				top: -50%;
-				left: -25%;
-				width: 50%;
-				height: 100%;
-				background: var(--accent-purple);
-				animation: float 25s ease-in-out infinite;
+			.post-date {
+				display: flex;
+				align-items: center;
+				gap: var(--space-xs);
 			}
 			
-			.cta::after {
-				bottom: -50%;
-				right: -25%;
-				width: 50%;
-				height: 100%;
-				background: var(--accent-coral);
-				animation: float 30s ease-in-out infinite reverse;
+			/* Sidebar */
+			.sidebar {
+				position: sticky;
+				top: calc(60px + var(--space-2xl));
 			}
-
-			.cta-title {
-				font-size: clamp(2rem, 5vw, 3rem);
+			
+			/* Profile Card */
+			.profile-card {
+				background: rgb(var(--white));
+				border-radius: var(--radius-lg);
+				padding: var(--space-xl);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+				border: 1px solid rgba(0, 0, 0, 0.06);
+			}
+			
+			.profile-header {
+				display: flex;
+				align-items: center;
+				gap: var(--space-lg);
 				margin-bottom: var(--space-lg);
-				position: relative;
-				z-index: 1;
-				font-weight: 800;
 			}
-
-			.cta-description {
+			
+			.profile-avatar {
+				width: 64px;
+				height: 64px;
+				border-radius: var(--radius-full);
+				overflow: hidden;
+				flex-shrink: 0;
+			}
+			
+			.profile-avatar img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+			
+			.profile-info {
+				flex: 1;
+			}
+			
+			.profile-name {
+				font-size: var(--font-size-lg);
+				font-weight: 700;
+				margin-bottom: var(--space-xs);
+				color: var(--text-primary);
+			}
+			
+			.profile-company {
+				font-size: var(--font-size-sm);
+				color: var(--text-secondary);
+			}
+			
+			.profile-bio {
+				font-size: var(--font-size-sm);
+				line-height: var(--line-height-relaxed);
+				color: var(--text-secondary);
+				margin-bottom: var(--space-lg);
+			}
+			
+			.profile-stats {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: var(--space-md);
+				padding: var(--space-lg) 0;
+				border-top: 1px solid rgba(var(--gray-200), 0.5);
+				border-bottom: 1px solid rgba(var(--gray-200), 0.5);
+				margin-bottom: var(--space-lg);
+			}
+			
+			.stat-item {
+				text-align: center;
+			}
+			
+			.stat-value {
 				font-size: var(--font-size-xl);
-				margin-bottom: var(--space-2xl);
-				opacity: 0.9;
-				position: relative;
-				z-index: 1;
-				max-width: 600px;
-				margin-left: auto;
-				margin-right: auto;
+				font-weight: 700;
+				color: var(--text-primary);
+				display: block;
 			}
 			
-			.cta-actions {
-				position: relative;
-				z-index: 1;
+			.stat-label {
+				font-size: var(--font-size-xs);
+				color: var(--text-muted);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
 			}
-
-			.btn-white {
-				background-color: rgba(255, 255, 255, 0.95);
-				color: var(--primary);
-				backdrop-filter: blur(10px);
-				border: 2px solid rgba(255, 255, 255, 0.3);
+			
+			.social-links {
+				display: flex;
+				gap: var(--space-sm);
+			}
+			
+			.social-link {
+				flex: 1;
+				padding: var(--space-sm) var(--space-md);
+				border-radius: var(--radius-md);
+				font-size: var(--font-size-sm);
 				font-weight: 600;
-			}
-
-			.btn-white:hover {
-				background-color: rgb(var(--white));
-				transform: translateY(-3px) scale(1.05);
-				box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+				text-align: center;
+				text-decoration: none;
+				transition: all var(--transition-base);
 			}
 			
-			.btn-white .btn-icon {
-				margin-right: var(--space-sm);
-				margin-left: 0;
+			.twitter-link {
+				background: #1DA1F2;
+				color: white;
 			}
-
+			
+			.twitter-link:hover {
+				background: #1a8cd8;
+				transform: translateY(-2px);
+			}
+			
+			.github-link {
+				background: #333;
+				color: white;
+			}
+			
+			.github-link:hover {
+				background: #000;
+				transform: translateY(-2px);
+			}
+			
+			/* Categories */
+			.categories-card {
+				background: rgb(var(--white));
+				border-radius: var(--radius-lg);
+				padding: var(--space-xl);
+				margin-top: var(--space-xl);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+				border: 1px solid rgba(0, 0, 0, 0.06);
+			}
+			
+			.categories-title {
+				font-size: var(--font-size-base);
+				font-weight: 700;
+				margin-bottom: var(--space-lg);
+				color: var(--text-primary);
+			}
+			
+			.category-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: var(--space-sm);
+			}
+			
+			.category-tag {
+				padding: var(--space-xs) var(--space-md);
+				background: #f0f0f0;
+				color: var(--text-secondary);
+				font-size: var(--font-size-sm);
+				border-radius: var(--radius-full);
+				text-decoration: none;
+				transition: all var(--transition-base);
+			}
+			
+			.category-tag:hover {
+				background: #79b8b1;
+				color: white;
+				transform: translateY(-2px);
+			}
+			
+			/* Empty State */
+			.empty-state {
+				grid-column: 1 / -1;
+				text-align: center;
+				padding: var(--space-4xl);
+				color: var(--text-secondary);
+			}
+			
 			/* Responsive */
+			@media (max-width: 1024px) {
+				.main-container {
+					grid-template-columns: 1fr;
+				}
+				
+				.sidebar {
+					position: static;
+					order: -1;
+					margin-bottom: var(--space-2xl);
+				}
+				
+				.profile-card {
+					max-width: 500px;
+					margin: 0 auto;
+				}
+			}
+			
 			@media (max-width: 768px) {
-				.hero {
-					min-height: 100vh;
-					padding: var(--space-xl) 0;
+				.main-container {
+					padding: var(--space-lg);
 				}
 				
-				.hero-title {
-					font-size: clamp(2.5rem, 10vw, 4rem);
-				}
-
-				.hero-actions {
-					flex-direction: column;
-					align-items: center;
-					gap: var(--space-md);
-				}
-
-				.btn {
-					width: 100%;
-					max-width: 300px;
-				}
-				
-				.features-grid,
 				.posts-grid {
 					grid-template-columns: 1fr;
-					gap: var(--space-xl);
-				}
-			}
-
-			/* Animations */
-			@keyframes fadeInUp {
-				from {
-					opacity: 0;
-					transform: translateY(30px);
-				}
-				to {
-					opacity: 1;
-					transform: translateY(0);
-				}
-			}
-			
-			@keyframes float {
-				0%, 100% {
-					transform: translate(0, 0) rotate(0deg);
-				}
-				33% {
-					transform: translate(30px, -30px) rotate(120deg);
-				}
-				66% {
-					transform: translate(-20px, 20px) rotate(240deg);
 				}
 			}
 		</style>
@@ -495,125 +332,112 @@ const recentPosts = response.contents;
 	<body>
 		<Header />
 		
-		<!-- Hero Section -->
-		<section class="hero">
-			<div class="hero-content">
-				<span class="hero-label animate-fadeIn">プロフェッショナル開発者 & デザイナー</span>
-				<h1 class="hero-title">デジタル体験を創造する</h1>
-				<p class="hero-subtitle">エレガントなコードと思慮深いデザインで革新的なソリューションを構築</p>
-				<div class="hero-actions">
-					<a href="/blog" class="btn btn-primary">
-						<span>記事を見る</span>
-						<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-							<path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-						</svg>
-					</a>
-					<a href="#contact" class="btn btn-secondary btn-glass">
-						<span>お問い合わせ</span>
-					</a>
-				</div>
-			</div>
-		</section>
-
-		<!-- Features Section -->
-		<section class="features">
-			<div class="features-grid">
-				<div class="feature-card">
-					<div class="feature-icon">
-						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-							<path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-							<path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-							<path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</div>
-					<h3 class="feature-title">モダンな技術スタック</h3>
-					<p class="feature-description">
-						最先端の技術を活用して、スケーラブルで高性能なアプリケーションを構築します。
-					</p>
-				</div>
-				<div class="feature-card">
-					<div class="feature-icon">
-						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</div>
-					<h3 class="feature-title">優れたデザイン</h3>
-					<p class="feature-description">
-						ユーザーが愛する直感的で美しいインターフェースを作成します。
-					</p>
-				</div>
-				<div class="feature-card">
-					<div class="feature-icon">
-						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-							<path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</div>
-					<h3 class="feature-title">パフォーマンス重視</h3>
-					<p class="feature-description">
-						速度と効率性を最適化し、卓越したユーザー体験を提供します。
-					</p>
-				</div>
-			</div>
-		</section>
-
-		<!-- Recent Posts Section -->
-		<section class="recent-posts">
-			<div class="section-header">
-				<h2 class="section-title">最新の記事</h2>
-				<p class="section-subtitle">テクノロジーとデザインに関する最近の考察をご覧ください</p>
-			</div>
-			
-			<div class="posts-grid">
-				{recentPosts.map((post) => (
-					<a href={`/blog/${post.slug}/`} class="post-card">
-						{post.heroImage && (
-							<div class="post-image">
-								<img
-									src={post.heroImage.url + '?w=640&h=400&fit=crop'}
-									alt={post.title}
-									width="640"
-									height="400"
-									loading="lazy"
-								/>
+		<div class="main-wrapper">
+			<div class="main-container">
+				<!-- Content Area -->
+				<main class="content-area">
+					<div class="posts-grid">
+						{recentPosts.length > 0 ? (
+							recentPosts.map((post) => (
+								<a href={`/blog/${post.slug}/`} class="post-card">
+									<div class="post-thumbnail">
+										{post.heroImage ? (
+											<img
+												src={post.heroImage.url + '?w=560&h=315&fit=crop'}
+												alt={post.title}
+												loading="lazy"
+											/>
+										) : (
+											<img
+												src="https://placehold.co/560x315/e9ecef/6c757d?text=No+Image"
+												alt="No image"
+											/>
+										)}
+										{post.category && (
+											<span class="post-category-tag">{post.category.name}</span>
+										)}
+									</div>
+									<div class="post-content">
+										<h2 class="post-title">{post.title}</h2>
+										<div class="post-meta">
+											<span class="post-date">
+												<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+													<path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM4 8h12v8H4V8z" clip-rule="evenodd"/>
+												</svg>
+												<FormattedDate date={new Date(post.publishedAt)} />
+											</span>
+										</div>
+									</div>
+								</a>
+							))
+						) : (
+							<div class="empty-state">
+								<p>まだ記事がありません。</p>
 							</div>
 						)}
-						<div class="post-content">
-							<h3 class="post-title">{post.title}</h3>
-							<p class="post-date">
-								<FormattedDate date={new Date(post.publishedAt)} />
-							</p>
+					</div>
+				</main>
+				
+				<!-- Sidebar -->
+				<aside class="sidebar">
+					<!-- Profile Card -->
+					<div class="profile-card">
+						<div class="profile-header">
+							<div class="profile-avatar">
+								<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=128&h=128&fit=crop" alt="プロフィール画像" />
+							</div>
+							<div class="profile-info">
+								<h2 class="profile-name">山田 太郎</h2>
+								<p class="profile-company">Tech Company Inc.</p>
+							</div>
 						</div>
-					</a>
-				))}
+						
+						<p class="profile-bio">
+							フルスタック開発者として、最新のWeb技術を使用して革新的なソリューションを構築しています。
+							インフラからフロントエンドまで幅広く対応。
+						</p>
+						
+						<div class="profile-stats">
+							<div class="stat-item">
+								<span class="stat-value">150</span>
+								<span class="stat-label">記事</span>
+							</div>
+							<div class="stat-item">
+								<span class="stat-value">2.5k</span>
+								<span class="stat-label">フォロワー</span>
+							</div>
+							<div class="stat-item">
+								<span class="stat-value">10+</span>
+								<span class="stat-label">年の経験</span>
+							</div>
+						</div>
+						
+						<div class="social-links">
+							<a href="https://twitter.com" target="_blank" class="social-link twitter-link">
+								Twitter
+							</a>
+							<a href="https://github.com" target="_blank" class="social-link github-link">
+								GitHub
+							</a>
+						</div>
+					</div>
+					
+					<!-- Categories -->
+					<div class="categories-card">
+						<h3 class="categories-title">カテゴリー</h3>
+						<div class="category-tags">
+							<a href="/blog/category/infrastructure" class="category-tag">インフラ</a>
+							<a href="/blog/category/programming" class="category-tag">プログラミング</a>
+							<a href="/blog/category/career" class="category-tag">キャリア</a>
+							<a href="/blog/category/design" class="category-tag">デザイン</a>
+							<a href="/blog/category/business" class="category-tag">ビジネス</a>
+							<a href="/blog/category/life" class="category-tag">ライフ</a>
+						</div>
+					</div>
+				</aside>
 			</div>
-			
-			<div class="view-all">
-				<a href="/blog" class="btn btn-primary btn-outline">
-					<span>すべての記事を見る</span>
-					<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-						<path fill-rule="evenodd" d="M12.293 3.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 9H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-					</svg>
-				</a>
-			</div>
-		</section>
-
-		<!-- CTA Section -->
-		<section class="cta" id="contact">
-			<h2 class="cta-title">一緒に素晴らしいものを作りましょう</h2>
-			<p class="cta-description">
-				革新的なプロジェクトでのコラボレーションと知識の共有をいつも楽しみにしています
-			</p>
-			<div class="cta-actions">
-				<a href="mailto:contact@example.com" class="btn btn-white">
-					<svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-						<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-						<path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-					</svg>
-					<span>お問い合わせはこちら</span>
-				</a>
-			</div>
-		</section>
-
+		</div>
+		
 		<Footer />
 	</body>
 </html>

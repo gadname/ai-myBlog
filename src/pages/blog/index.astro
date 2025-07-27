@@ -17,15 +17,22 @@ const posts = response.contents;
 <!doctype html>
 <html lang="ja">
 	<head>
-		<BaseHead title={`Articles | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<BaseHead title={`ブログ | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
+			/* Main Wrapper */
+			.main-wrapper {
+				background: #f8f9fa;
+				min-height: 100vh;
+			}
+			
 			/* Page Header - Minimal & Elegant */
 			.page-header {
 				text-align: center;
-				padding: var(--space-4xl) var(--space-xl) var(--space-3xl);
-				background: var(--bg-primary);
+				padding: var(--space-3xl) var(--space-xl) var(--space-2xl);
+				background: rgb(var(--white));
 				position: relative;
 				overflow: hidden;
+				border-bottom: 1px solid rgba(var(--gray-200), 0.5);
 			}
 			
 			.page-header::before {
@@ -67,17 +74,17 @@ const posts = response.contents;
 				opacity: 0.8;
 			}
 
-			/* Blog Grid - Magazine Layout */
+			/* Blog Container */
 			.blog-container {
-				max-width: var(--max-width-7xl);
+				max-width: 1200px;
 				margin: 0 auto;
-				padding: var(--space-3xl) var(--space-xl);
+				padding: var(--space-2xl) var(--space-xl);
 			}
 
 			.blog-grid {
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-				gap: var(--space-2xl);
+				grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+				gap: var(--space-xl);
 				list-style: none;
 				margin: 0;
 				padding: 0;
@@ -412,16 +419,17 @@ const posts = response.contents;
 	<body>
 		<Header />
 		
-		<!-- Page Header -->
-		<div class="page-header">
-			<h1 class="page-title animate-fadeIn">ブログ記事</h1>
-			<p class="page-description animate-fadeIn">
-				テクノロジー、デザイン、イノベーションの交差点を探求する
-			</p>
-		</div>
+		<div class="main-wrapper">
+			<!-- Page Header -->
+			<div class="page-header">
+				<h1 class="page-title animate-fadeIn">ブログ記事</h1>
+				<p class="page-description animate-fadeIn">
+					テクノロジー、デザイン、イノベーションの交差点を探求する
+				</p>
+			</div>
 
-		<!-- Blog Content -->
-		<main class="blog-container">
+			<!-- Blog Content -->
+			<main class="blog-container">
 			{posts.length > 0 ? (
 				<ul class="blog-grid">
 					{posts.map((post, index) => {
@@ -502,7 +510,8 @@ const posts = response.contents;
 					</p>
 				</div>
 			)}
-		</main>
+			</main>
+		</div>
 		
 		<Footer />
 	</body>
