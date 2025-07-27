@@ -1,0 +1,163 @@
+---
+import type { Blog } from '../lib/microcms';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+
+type Props = Blog;
+
+const { title, description, publishedAt, updatedAt, heroImage, content, category, tags } = Astro.props;
+---
+
+<html lang="ja">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				width: calc(100% - 2em);
+				max-width: 100%;
+				margin: 0;
+			}
+			.hero-image {
+				width: 100%;
+			}
+			.hero-image img {
+				display: block;
+				margin: 0 auto;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+			}
+			.prose {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+				color: rgb(var(--gray-dark));
+			}
+			.title {
+				margin-bottom: 1em;
+				padding: 1em 0;
+				text-align: center;
+				line-height: 1;
+			}
+			.title h1 {
+				margin: 0 0 0.5em 0;
+			}
+			.date {
+				margin-bottom: 0.5em;
+				color: rgb(var(--gray));
+			}
+			.last-updated-on {
+				font-style: italic;
+			}
+			.meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5em;
+				margin-top: 1em;
+			}
+			.category {
+				background-color: rgb(var(--accent));
+				color: white;
+				padding: 0.25em 0.75em;
+				border-radius: 0.25em;
+				font-size: 0.875em;
+			}
+			.tag {
+				background-color: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				padding: 0.25em 0.75em;
+				border-radius: 0.25em;
+				font-size: 0.875em;
+			}
+			/* microCMSのリッチエディタ用スタイル */
+			.content :global(h2) {
+				font-size: 1.75rem;
+				margin-top: 2rem;
+				margin-bottom: 1rem;
+			}
+			.content :global(h3) {
+				font-size: 1.5rem;
+				margin-top: 1.5rem;
+				margin-bottom: 0.75rem;
+			}
+			.content :global(p) {
+				margin-bottom: 1rem;
+			}
+			.content :global(ul),
+			.content :global(ol) {
+				margin-bottom: 1rem;
+				padding-left: 2rem;
+			}
+			.content :global(blockquote) {
+				border-left: 4px solid rgb(var(--accent));
+				padding-left: 1rem;
+				margin: 1rem 0;
+				font-style: italic;
+			}
+			.content :global(pre) {
+				background-color: rgb(var(--gray-light));
+				padding: 1rem;
+				border-radius: 0.5rem;
+				overflow-x: auto;
+				margin: 1rem 0;
+			}
+			.content :global(code) {
+				background-color: rgb(var(--gray-light));
+				padding: 0.125rem 0.25rem;
+				border-radius: 0.25rem;
+			}
+			.content :global(pre code) {
+				background-color: transparent;
+				padding: 0;
+			}
+			.content :global(img) {
+				max-width: 100%;
+				height: auto;
+				border-radius: 0.5rem;
+				margin: 1rem 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<div class="hero-image">
+					{heroImage && (
+						<img
+							width={1020}
+							height={510}
+							src={heroImage.url + '?w=1020&h=510&fit=crop'}
+							alt={title}
+						/>
+					)}
+				</div>
+				<div class="prose">
+					<div class="title">
+						<div class="date">
+							<FormattedDate date={new Date(publishedAt)} />
+							{
+								updatedAt && updatedAt !== publishedAt && (
+									<div class="last-updated-on">
+										最終更新: <FormattedDate date={new Date(updatedAt)} />
+									</div>
+								)
+							}
+						</div>
+						<h1>{title}</h1>
+						<div class="meta">
+							{category && <span class="category">{category.name}</span>}
+							{tags && tags.map(tag => <span class="tag">{tag.name}</span>)}
+						</div>
+						<hr />
+					</div>
+					<div class="content" set:html={content} />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

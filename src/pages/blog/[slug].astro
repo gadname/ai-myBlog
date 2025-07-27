@@ -1,0 +1,15 @@
+---
+import { getBlogs, getBlogBySlug, type Blog } from '../../lib/microcms';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+export async function getStaticPaths() {
+	const response = await getBlogs({ limit: 100 });
+	return response.contents.map((post: Blog) => ({
+		params: { slug: post.slug },
+		props: post,
+	}));
+}
+const post = Astro.props as Blog;
+---
+
+<BlogPost {...post} /> 
